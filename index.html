@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pengumuman Kelulusan</title>
+  <style>
+    /* BACKGROUND GAMBAR + BLUR */
+    body {
+      font-family: Arial;
+      text-align:center;
+      margin:0;
+      color: white;
+      height:100vh;
+      overflow:hidden;
+    }
+
+    .bg {
+      position:fixed;
+      top:0; left:0;
+      width:100%; height:100%;
+      background-image: url('background.jpg'); /* gunakan gambar yang kamu upload */ /* GANTI DENGAN FOTO SEKOLAH */
+      background-size: cover;
+      background-position: center;
+      /* blur dihapus */
+      z-index:-2;
+    }
+
+    .overlay {
+      position:fixed;
+      top:0; left:0;
+      width:100%; height:100%;
+      background: rgba(0,0,0,0.6);
+      z-index:-1;
+    }
+
+    .container {
+      margin-top:60px;
+    }
+
+    .logo {
+      width:100px;
+      margin-bottom:10px;
+    }
+
+    input, button {
+      padding:10px;
+      margin:10px;
+      border:none;
+      border-radius:6px;
+    }
+
+    button {
+      background:#00c6ff;
+      color:white;
+      cursor:pointer;
+      font-weight:bold;
+    }
+
+    button:hover { background:#0072ff; }
+
+    h1 {
+      text-shadow:2px 2px 6px rgba(0,0,0,0.6);
+    }
+
+    #info {
+      margin-top:20px;
+      font-weight:bold;
+    }
+
+    /* POPUP */
+    .popup {
+      position: fixed; top:0; left:0;
+      width:100%; height:100%;
+      background: rgba(0,0,0,0.9);
+      display:flex; align-items:center; justify-content:center;
+      flex-direction:column;
+    }
+
+    .popup-content {
+      background:white;
+      color:black;
+      padding:2rem;
+      border-radius:12px;
+      animation: zoom 0.4s ease;
+      box-shadow:0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    @keyframes zoom {
+      from { transform:scale(0.7); }
+      to { transform:scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg"></div>
+<div class="overlay"></div>
+
+<div class="container">
+  <!-- LOGO SEKOLAH -->
+  <img src="logo.png" class="logo"> <!-- GANTI LOGO -->
+
+  <h1>🎓 Pengumuman Kelulusan 🎓</h1>
+
+  <input type="text" id="nisn" placeholder="Masukkan NISN">
+  <br>
+  <button onclick="cekKelulusan()">Cek</button>
+
+  <p id="info"></p>
+</div>
+
+<div id="popup"></div>
+
+<audio id="drum" src="https://www.soundjay.com/misc/sounds/drum-roll-1.mp3"></audio>
+<audio id="clap" src="https://www.soundjay.com/human/sounds/applause-8.mp3"></audio>
+
+<script>
+const releaseTime = new Date("2026-05-04T22:00:00");
+
+const students = [
+  { nisn:"0089269971", nama:"DIKI WAHYUDI", kelas:"XII", status:"LULUS" },
+  { nisn:"0084307085", nama:"FAREL FIRMANSYAH", kelas:"XII", status:"LULUS" },
+  { nisn:"0074872381", nama:"FAUZAN", kelas:"XII", status:"LULUS" },
+  { nisn:"0076952984", nama:"FITRI RAHMADANI", kelas:"XII", status:"LULUS" },
+  { nisn:"0072197719", nama:"HUMAIRA", kelas:"XII", status:"LULUS" },
+  { nisn:"0062618748", nama:"IHSAN ZULFAUZI", kelas:"XII", status:"LULUS" },
+  { nisn:"0051465021", nama:"JEFRI GEOVANI", kelas:"XII", status:"LULUS" },
+  { nisn:"0068951942", nama:"MUHAMMAD ZUKRI", kelas:"XII", status:"LULUS" },
+  { nisn:"0086577848", nama:"MUTIARA ADZIKYA RAHMI", kelas:"XII", status:"LULUS" },
+  { nisn:"0078794739", nama:"QHORI NURQHATIMAH", kelas:"XII", status:"LULUS" },
+  { nisn:"0073912145", nama:"RANI RAHMADANI", kelas:"XII", status:"LULUS" },
+  { nisn:"0076447325", nama:"RIKA AMELIYA PUTRI", kelas:"XII", status:"LULUS" },
+  { nisn:"0041683861", nama:"Riska Mulyani", kelas:"XII", status:"LULUS" }
+];
+
+function isUnlocked() {
+  return new Date() >= releaseTime;
+}
+
+function showCountdown() {
+  const now = new Date();
+  const diff = releaseTime - now;
+
+  if (diff <= 0) {
+    document.getElementById('info').innerHTML = "Pengumuman sudah dibuka";
+    return;
+  }
+
+  const h = Math.floor(diff/(1000*60*60));
+  const m = Math.floor((diff%(1000*60*60))/(1000*60));
+  const s = Math.floor((diff%(1000*60))/1000);
+
+  document.getElementById('info').innerHTML = `⏳ Dibuka dalam ${h}j ${m}m ${s}d`;
+}
+
+setInterval(showCountdown,1000);
+
+function cekKelulusan() {
+  if (!isUnlocked()) {
+    alert("Pengumuman belum dibuka!");
+    return;
+  }
+
+  const nisn = document.getElementById('nisn').value.trim();
+  const student = students.find(s => s.nisn === nisn);
+
+  if (student) {
+    document.getElementById('drum').play();
+
+    setTimeout(()=>{
+      document.getElementById('clap').play();
+
+      document.getElementById('popup').innerHTML = `
+        <div class="popup">
+          <div class="popup-content">
+            <h2>🎉 SELAMAT 🎉</h2>
+            <p><b>${student.nama}</b></p>
+            <p>Kelas: ${student.kelas}</p>
+            <p>Status: ${student.status}</p>
+            <button onclick="tutup()">Tutup</button>
+          </div>
+        </div>`;
+    },2000);
+
+  } else {
+    alert("NISN tidak ditemukan");
+  }
+}
+
+function tutup(){
+  document.getElementById('popup').innerHTML='';
+}
+</script>
+
+</body>
+</html>
